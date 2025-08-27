@@ -1,94 +1,321 @@
 ---
 title: 'Development'
-description: 'Preview changes locally to update your docs'
+description: 'Advanced Lexa development - Fine-tuning, custom models, and production deployment'
 ---
 
 <Info>
   **Prerequisites**:
-  - Node.js version 19 or higher
-  - A docs repository with a `docs.json` file
+  - Lexa API access and API key
+  - Basic understanding of machine learning concepts
+  - Python 3.8+ or Node.js 18+ for development
 </Info>
 
-Follow these steps to install and run Mintlify on your operating system.
+Learn how to customize and extend Lexa for your specific use cases and production environments.
+
+## Fine-tuning Lexa
+
+Customize Lexa's behavior for your domain-specific requirements.
 
 <Steps>
-<Step title="Install the Mintlify CLI">
+<Step title="Prepare your training data">
 
-```bash
-npm i -g mint
+Lexa fine-tuning requires high-quality training data in a specific format:
+
+```json
+[
+  {
+    "messages": [
+      {"role": "user", "content": "What is the capital of France?"},
+      {"role": "assistant", "content": "The capital of France is Paris."}
+    ]
+  },
+  {
+    "messages": [
+      {"role": "user", "content": "How do I make a cake?"},
+      {"role": "assistant", "content": "To make a basic cake, you'll need flour, eggs, sugar, and butter..."}
+    ]
+  }
+]
 ```
+
+<Tip>
+Ensure your training data is diverse, high-quality, and follows your desired response patterns.
+</Tip>
+
 </Step>
 
-<Step title="Preview locally">
+<Step title="Upload your dataset">
 
-Navigate to your docs directory where your `docs.json` file is located, and run the following command:
+Use the Lexa API to upload your training dataset:
 
 ```bash
-mint dev
+curl -X POST https://api.lexa.chat/v1/files \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -F "file=@training_data.jsonl" \
+  -F "purpose=fine-tune"
 ```
 
-A local preview of your documentation will be available at `http://localhost:3000`.
+</Step>
+
+<Step title="Create a fine-tuning job">
+
+Start the fine-tuning process with your dataset:
+
+```bash
+curl -X POST https://api.lexa.chat/v1/fine_tuning/jobs \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "training_file": "file-abc123",
+    "model": "lexa-1",
+    "hyperparameters": {
+      "n_epochs": 3
+    }
+  }'
+```
+
+</Step>
+
+<Step title="Monitor and deploy">
+
+Track your fine-tuning progress and deploy when complete:
+
+```javascript
+// Check fine-tuning status
+const job = await lexa.fineTuning.jobs.retrieve('ft-abc123');
+console.log(`Status: ${job.status}`);
+
+// Use your fine-tuned model
+const response = await lexa.chat.completions.create({
+  model: 'ft:lexa-1:your-org:custom-model:1abc123',
+  messages: [
+    { role: 'user', content: 'Your custom prompt here' }
+  ]
+});
+```
 
 </Step>
 </Steps>
 
-## Custom ports
+## Advanced API Usage
 
-By default, Mintlify uses port 3000. You can customize the port Mintlify runs on by using the `--port` flag. For example, to run Mintlify on port 3333, use this command:
+Optimize your Lexa integration with advanced features and best practices.
 
-```bash
-mint dev --port 3333
+### Streaming Responses
+
+For real-time applications, use streaming to get responses as they're generated:
+
+```javascript
+const stream = await lexa.chat.completions.create({
+  model: 'lexa-1',
+  messages: [{ role: 'user', content: 'Tell me a story' }],
+  stream: true
+});
+
+for await (const chunk of stream) {
+  const content = chunk.choices[0]?.delta?.content;
+  if (content) {
+    process.stdout.write(content);
+  }
+}
 ```
 
-If you attempt to run Mintlify on a port that's already in use, it will use the next available port:
+### Function Calling
 
-```md
-Port 3000 is already in use. Trying 3001 instead.
+Enable structured outputs with function calling:
+
+```javascript
+const response = await lexa.chat.completions.create({
+  model: 'lexa-1',
+  messages: [
+    { role: 'user', content: 'What\'s the weather like in San Francisco?' }
+  ],
+  tools: [
+    {
+      type: 'function',
+      function: {
+        name: 'get_weather',
+        description: 'Get current weather for a location',
+        parameters: {
+          type: 'object',
+          properties: {
+            location: {
+              type: 'string',
+              description: 'City name'
+            }
+          },
+          required: ['location']
+        }
+      }
+    }
+  ]
+});
 ```
 
-## Mintlify versions
+### Context Management
 
-Please note that each CLI release is associated with a specific version of Mintlify. If your local preview does not align with the production version, please update the CLI:
+Optimize token usage with smart context management:
 
-```bash
-npm mint update
+```javascript
+// Track conversation context
+let conversation = [
+  { role: 'system', content: 'You are a helpful assistant.' }
+];
+
+// Add user message
+conversation.push({ role: 'user', content: userInput });
+
+// Truncate if context is too long
+if (conversation.length > 10) {
+  conversation = [
+    conversation[0], // Keep system message
+    ...conversation.slice(-9) // Keep last 9 messages
+  ];
+}
+
+const response = await lexa.chat.completions.create({
+  model: 'lexa-1',
+  messages: conversation,
+  max_tokens: 1000
+});
+
+// Add assistant response to context
+conversation.push(response.choices[0].message);
 ```
 
-## Validating links
+## Production Deployment
 
-The CLI can assist with validating links in your documentation. To identify any broken links, use the following command:
+Deploy Lexa-powered applications with confidence.
 
-```bash
-mint broken-links
+### Rate Limiting and Caching
+
+Implement proper rate limiting and caching strategies:
+
+```javascript
+import rateLimit from 'express-rate-limit';
+import Redis from 'ioredis';
+
+const redis = new Redis(process.env.REDIS_URL);
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: 'Too many requests from this IP'
+});
+
+// Response caching
+async function getCachedResponse(prompt, userId) {
+  const cacheKey = `lexa:${userId}:${hash(prompt)}`;
+  const cached = await redis.get(cacheKey);
+  
+  if (cached) {
+    return JSON.parse(cached);
+  }
+  
+  const response = await lexa.chat.completions.create({
+    model: 'lexa-1',
+    messages: [{ role: 'user', content: prompt }]
+  });
+  
+  // Cache for 1 hour
+  await redis.setex(cacheKey, 3600, JSON.stringify(response));
+  return response;
+}
 ```
 
-## Deployment
+### Error Handling
 
-If the deployment is successful, you should see the following:
+Implement robust error handling for production:
 
-<Frame>
-  <img src="/images/checks-passed.png" alt="Screenshot of a deployment confirmation message that says All checks have passed." style={{ borderRadius: '0.5rem' }} />
-</Frame>
+```javascript
+async function safeLexaCall(prompt) {
+  try {
+    const response = await lexa.chat.completions.create({
+      model: 'lexa-1',
+      messages: [{ role: 'user', content: prompt }],
+      timeout: 30000 // 30 second timeout
+    });
+    
+    return {
+      success: true,
+      data: response.choices[0].message.content
+    };
+  } catch (error) {
+    console.error('Lexa API error:', error);
+    
+    if (error.code === 'rate_limit_exceeded') {
+      return {
+        success: false,
+        error: 'Rate limit exceeded. Please try again later.'
+      };
+    }
+    
+    if (error.code === 'timeout') {
+      return {
+        success: false,
+        error: 'Request timed out. Please try again.'
+      };
+    }
+    
+    return {
+      success: false,
+      error: 'An unexpected error occurred. Please try again.'
+    };
+  }
+}
+```
 
-## Code formatting
+## Performance Optimization
 
-We suggest using extensions on your IDE to recognize and format MDX. If you're a VSCode user, consider the [MDX VSCode extension](https://marketplace.visualstudio.com/items?itemName=unifiedjs.vscode-mdx) for syntax highlighting, and [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) for code formatting.
+Optimize your Lexa integration for better performance and cost efficiency.
+
+<AccordionGroup>
+  <Accordion title="Token Optimization">
+    - Use shorter, more specific prompts
+    - Implement context truncation strategies
+    - Consider using lexa-1-fast for speed-critical applications
+    - Cache frequently requested responses
+  </Accordion>
+
+  <Accordion title="Cost Management">
+    - Monitor token usage with detailed logging
+    - Implement usage quotas and alerts
+    - Use appropriate models for different use cases
+    - Consider fine-tuning for domain-specific efficiency
+  </Accordion>
+
+  <Accordion title="Scalability">
+    - Use connection pooling for high-traffic applications
+    - Implement horizontal scaling with load balancers
+    - Consider async processing for non-real-time requests
+    - Use CDNs for static content and caching
+  </Accordion>
+</AccordionGroup>
 
 ## Troubleshooting
 
 <AccordionGroup>
-  <Accordion title='Error: Could not load the "sharp" module using the darwin-arm64 runtime'>
-
-    This may be due to an outdated version of node. Try the following:
-    1. Remove the currently-installed version of the CLI: `npm remove -g mint`
-    2. Upgrade to Node v19 or higher.
-    3. Reinstall the CLI: `npm i -g mint`
+  <Accordion title="High latency issues">
+    - Check your network connection to Lexa's API endpoints
+    - Consider using lexa-1-fast for speed-critical applications
+    - Implement request timeouts and retry logic
+    - Monitor API response times and optimize prompts
   </Accordion>
 
-  <Accordion title="Issue: Encountering an unknown error">
-  
-    Solution: Go to the root of your device and delete the `~/.mintlify` folder. Then run `mint dev` again.
+  <Accordion title="Token limit exceeded">
+    - Truncate conversation history intelligently
+    - Use more concise prompts
+    - Implement context summarization for long conversations
+    - Consider breaking complex requests into smaller chunks
+  </Accordion>
+
+  <Accordion title="Fine-tuning failures">
+    - Ensure training data quality and format
+    - Check dataset size requirements (minimum 10 examples)
+    - Verify API key permissions for fine-tuning
+    - Monitor job status and error messages
   </Accordion>
 </AccordionGroup>
 
-Curious about what changed in the latest CLI version? Check out the [CLI changelog](https://www.npmjs.com/package/mintlify?activeTab=versions).
+Ready to deploy? Check out our [API reference](/api-reference/introduction) for complete endpoint documentation.

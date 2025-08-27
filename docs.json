@@ -1,92 +1,79 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
-  "name": "Mint Starter Kit",
+  "theme": "almond",
+  "name": "Lexa Documentation",
+
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#090088",
+    "light": "#0074ff",
+    "dark": "#090088"
   },
   "favicon": "/favicon.svg",
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Lexa Chat",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Getting Started",
             "pages": [
-              "index",
-              "quickstart",
-              "development"
+              "lexa-chat",
+              "chat-basics",
+              "first-conversation"
             ]
           },
           {
-            "group": "Customization",
+            "group": "Core Features",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "web-search",
+              "image-generation",
+              "code-interpreter",
+              "voice-mode",
+              "file-uploads"
             ]
           },
           {
-            "group": "Writing content",
+            "group": "Advanced Features",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
+              "custom-models",
+              "knowledge-base",
+              "prompts-tools",
+              "notes"
             ]
           },
           {
-            "group": "AI tools",
+            "group": "Integrations",
             "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
+              "google-drive",
+              "onedrive",
+              "api-integration"
             ]
           }
         ]
       },
       {
-        "tab": "API reference",
+        "tab": "Lexa",
         "groups": [
           {
-            "group": "API documentation",
+            "group": "Coming Soon",
             "pages": [
-              "api-reference/introduction"
+              "lexa-coming-soon"
             ]
-          },
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
           {
-            "group": "Endpoint examples",
+            "group": "Coming Soon",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "api-coming-soon"
             ]
           }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Community",
-          "href": "https://mintlify.com/community",
-          "icon": "slack"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    }
+    ]
   },
   "logo": {
     "light": "/logo/light.svg",
@@ -96,18 +83,25 @@
     "links": [
       {
         "label": "Support",
-        "href": "mailto:hi@mintlify.com"
+        "href": "mailto:lexa@robiai.com"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
+      "label": "Talk to Lexa",
+      "href": "https://lexa.chat/"
     }
   },
+  "hidePoweredBy": true,
+  "showPoweredBy": false,
+  "css": "./styles.css",
+
   "footer": {
+    "hidePoweredBy": true,
+    "showPoweredBy": false,
     "socials": {
-      "x": "https://x.com/mintlify",
+      "x": "https://x.com/JustLexaIT",
+      "twitter": "https://x.com/RobiLabsAI",
       "github": "https://github.com/mintlify",
       "linkedin": "https://linkedin.com/company/mintlify"
     }

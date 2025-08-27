@@ -1,0 +1,18 @@
+/* Hide "powered by mintlify" text */
+[data-testid="powered-by-mintlify"],
+[class*="powered-by"],
+[class*="mintlify-powered"],
+footer a[href*="mintlify.com"],
+footer span:contains("powered by"),
+footer div:contains("powered by") {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* Alternative selectors for different Mintlify versions */
+footer a[href*="mintlify"],
+footer *:contains("Mintlify"),
+footer *:contains("mintlify") {
+  display: none !important;
+} 
