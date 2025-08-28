@@ -48,6 +48,12 @@
               "onedrive",
               "api-integration"
             ]
+          },
+          {
+            "group": "Updates",
+            "pages": [
+              "changelog"
+            ]
           }
         ]
       },
@@ -58,6 +64,12 @@
             "group": "Coming Soon",
             "pages": [
               "lexa-coming-soon"
+            ]
+          },
+          {
+            "group": "Integrations",
+            "pages": [
+              "vscode-integration"
             ]
           }
         ]

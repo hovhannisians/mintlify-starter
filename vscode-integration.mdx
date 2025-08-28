@@ -1,0 +1,226 @@
+---
+title: "VSCode Integration"
+description: "Use the Lexa extension in Visual Studio Code to chat, generate code, and work with your docs."
+---
+
+The official Lexa VSCode extension is coming soon. For now, you can integrate Lexa in VSCode using the Continue.dev extension configured to talk to your Lexa endpoint.
+
+### Download Extension
+
+You can download the Continue.dev extension from the Visual Studio Marketplace or directly via the Extensions view in VSCode by searching for "continue". Once installed, you can access it via the Continue tab in the sidebar.
+
+### Setup
+
+Click the assistant selector to the right of the main chat input in Continue.dev. Hover over "Local Assistant" and click the settings icon (⚙️). This opens `config.yaml`, where you configure your local assistant.
+
+<Info>
+If your chosen provider does not support authentication, configure Continue.dev to use the `openai` provider so it can use your Lexa authentication token.
+</Info>
+
+### Get your Lexa API key
+
+<video
+  autoPlay
+  muted
+  playsInline
+  loop
+  preload="metadata"
+  className="w-full aspect-video rounded-xl"
+>
+  <source src="https://docs.lexa.chat/images/how-to-get-lexa-api-key.mp4" type="video/mp4" />
+</video>
+
+<Steps>
+<Step title="Go to Lexa">
+  Visit `https://www.lexa.chat`.
+</Step>
+
+<Step title="Sign up or log in">
+  Create an account or sign in to your existing account.
+</Step>
+
+<Step title="Open your profile menu">
+  Click your avatar (top-right) or the avatar at the bottom of the sidebar.
+</Step>
+
+<Step title="Open Settings">
+  Click "Settings".
+</Step>
+
+<Step title="Go to Account tab">
+  Select the "Account" tab.
+</Step>
+
+<Step title="Show your API keys">
+  Find "API Keys" and click "Show".
+</Step>
+
+<Step title="Copy and use your key">
+  Copy your API key and paste it into your Continue.dev `config.yaml` (see Example config below). Store it securely.
+
+  ```yaml
+  apiKey: [api-key]
+  ```
+
+  <Check>
+  You should see your key referenced in Continue.dev and requests should authenticate.
+  </Check>
+
+  <Warning>
+  Treat API keys like passwords. Never commit them to source control. Rotate immediately if exposed.
+  </Warning>
+</Step>
+</Steps>
+
+### Example config
+
+Below is a Lexa-specific `config.yaml`. Update `apiKey` if needed.
+
+```yaml config.yaml
+name: Lexa
+version: 1.0.0
+schema: v1
+models:
+  - name: Lexa-MML
+    provider: openai
+    model: lexa-mml
+    env:
+      useLegacyCompletionsEndpoint: false
+    apiBase: http://lexa.chat/api
+    apiKey: [api-key]
+    roles:
+      - chat
+      - edit
+      - apply
+      - summarize
+    capabilities:
+      - tool_use
+      - image_input
+
+context:
+  - provider: code
+  - provider: docs
+  - provider: diff
+  - provider: terminal
+  - provider: problems
+  - provider: folder
+  - provider: codebase
+```
+
+### Miscellaneous configuration settings
+
+These values are required by the extension:
+
+```yaml
+name: Local Assistant
+version: 1.0.0
+schema: v1
+```
+
+The context section provides additional information to models:
+
+```yaml
+context:
+  - provider: code
+  - provider: docs
+  - provider: diff
+  - provider: terminal
+  - provider: problems
+  - provider: folder
+  - provider: codebase
+```
+
+### Models
+
+Define all models you want to use:
+
+```yaml
+models:
+  - ...
+```
+
+### Name
+
+Sets the display name shown in the Continue.dev chat input:
+
+```yaml
+name: Lexa
+```
+
+### Provider
+
+Use the OpenAI-compatible API provided by Lexa:
+
+```yaml
+provider: openai
+```
+
+### Model
+
+Use the Lexa model identifier you intend to target. Available identifiers: `lexa-mml`, `lexa-x1`, `lexa-rho`.
+
+```yaml
+model: lexa-mml
+```
+
+### Legacy completions endpoint
+
+Not required:
+
+```yaml
+env:
+  useLegacyCompletionsEndpoint: false
+```
+
+### API base
+
+Point Continue.dev to the Lexa endpoint:
+
+```yaml
+apiBase: http://lexa.chat/api
+```
+
+### API key
+
+Use your Lexa API key:
+
+```yaml
+apiKey: [api-key]
+```
+
+### Roles and capabilities
+
+Allow the model to be used for specific tasks and enable capabilities:
+
+```yaml
+roles:
+  - chat
+  - edit
+  - apply
+  - summarize
+capabilities:
+  - tool_use
+# - image_input  # Only supported by lexa-mml
+```
+
+<Note>
+Image input is supported only by `lexa-mml`. The `lexa-rho` and `lexa-x1` models do not support `image_input`.
+</Note>
+
+<Check>
+Setup complete. You can now interact with your model(s) via the Continue.dev chat input in VSCode.
+</Check>
+
+### Tips
+
+<Tip>
+Use concise prompts like "Refactor this function for readability" or "Summarize the open file". For docs, try "Draft MDX frontmatter for a new integration page".
+</Tip>
+
+### Troubleshooting
+
+- If the Continue panel is missing, reload VSCode (Cmd+R) or restart.
+- If authentication fails, verify your API base and key, then re-authenticate.
+- For issues, contact support at lexa@robiai.com.
+
+ 
