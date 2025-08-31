@@ -70,7 +70,8 @@
             "group": "Integrations",
             "pages": [
               "vscode-integration",
-              "js-sdk"
+              "js-sdk",
+              "python-sdk"
             ]
           }
         ]

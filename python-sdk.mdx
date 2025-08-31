@@ -1,0 +1,314 @@
+---
+title: "Python SDK"
+description: "Use the official Lexa Python SDK for easy integration with your applications"
+---
+
+## Python SDK
+
+Use the official Lexa Python SDK to integrate Lexa AI into your applications with an OpenAI-compatible interface.
+
+<Card
+  title="Install from PyPI"
+  icon="download"
+  href="https://pypi.org/project/lexa/"
+  horizontal
+>
+  Get the latest version: `pip install lexa`
+</Card>
+
+## Quick Start
+
+### Installation
+
+```bash
+pip install lexa
+```
+
+### Basic Usage
+
+```python
+from lexa_sdk import Lexa
+
+# Initialize the client with your API key
+client = Lexa(api_key="your-api-key")
+
+# Simple chat completion
+response = client.chat.completions.create(
+    model="lexa-mml",
+    messages=[
+        {"role": "user", "content": "Hello! Tell me a joke."}
+    ],
+    temperature=0.7,
+    max_tokens=100
+)
+
+print(response["choices"][0]["message"]["content"])
+```
+
+## Features
+
+- **OpenAI-Compatible** - Drop-in replacement for OpenAI SDK
+- **Async Support** - Full async/await support for high-performance applications
+- **Type Safety** - Comprehensive type hints and validation with Pydantic
+- **Streaming** - Real-time streaming responses for interactive applications
+- **Auto SSL** - Automatic SSL certificate handling - works out of the box
+- **Multiple Models** - Support for all Lexa models (lexa-mml, lexa-x1, lexa-rho)
+- **Flexible Configuration** - Optional SSL and configuration overrides
+- **High Performance** - Optimized HTTP clients with connection pooling
+
+## Available Models
+
+The SDK provides access to the following Lexa models:
+
+<CardGroup cols={3}>
+<Card title="lexa-mml" icon="image">
+  Multimodal model with vision capabilities (8,192 context window, 4,096 max tokens)
+</Card>
+
+<Card title="lexa-x1" icon="bolt">
+  Fast, lightweight text-based model (4,096 context window, 2,048 max tokens)
+</Card>
+
+<Card title="lexa-rho" icon="brain">
+  Reasoning model with enhanced capabilities (16,384 context window, 8,192 max tokens)
+</Card>
+</CardGroup>
+
+## Usage Examples
+
+### Basic Chat Completion
+
+```python
+from lexa_sdk import Lexa
+
+client = Lexa(api_key="your-api-key")
+
+response = client.chat.completions.create(
+    model="lexa-mml",
+    messages=[
+        {"role": "user", "content": "Hello! Tell me a joke."}
+    ],
+    temperature=0.7,
+    max_tokens=100
+)
+
+print(response["choices"][0]["message"]["content"])
+```
+
+### Async Support
+
+```python
+import asyncio
+from lexa_sdk import Lexa
+
+async def main():
+    client = Lexa(api_key="your-api-key")
+
+    # Async chat completion
+    response = await client.chat.completions.acreate(
+        model="lexa-mml",
+        messages=[{"role": "user", "content": "Explain quantum computing"}],
+        temperature=0.3
+    )
+
+    print(response["choices"][0]["message"]["content"])
+
+asyncio.run(main())
+```
+
+### Streaming Responses
+
+```python
+from lexa_sdk import Lexa
+
+client = Lexa(api_key="your-api-key")
+
+# Streaming chat completion
+stream = client.chat.completions.create(
+    model="lexa-mml",
+    messages=[{"role": "user", "content": "Write a short story"}],
+    temperature=0.8,
+    stream=True
+)
+
+for chunk in stream:
+    if chunk["choices"][0]["delta"].get("content"):
+        print(chunk["choices"][0]["delta"]["content"], end="", flush=True)
+```
+
+### List Available Models
+
+```python
+from lexa_sdk import Lexa
+
+client = Lexa(api_key="your-api-key")
+
+# List available models
+models = client.models.list()
+print(models)
+
+# Async list models
+async def get_models():
+    models = await client.models.alist()
+    print(models)
+```
+
+## Advanced Configuration
+
+### Custom SSL Configuration
+
+```python
+from lexa_sdk import Lexa
+
+# For environments with SSL issues (not recommended for production)
+client = Lexa(
+    api_key="your-api-key",
+    verify_ssl=False  # ⚠️  Only use if necessary
+)
+
+# Or use enhanced SSL (default behavior)
+client = Lexa(
+    api_key="your-api-key",
+    enhanced_ssl=True  # Automatically download and use correct certificates
+)
+```
+
+## API Reference
+
+### Client Methods
+
+- `client.chat.completions.create()` - Create chat completion
+- `client.chat.completions.acreate()` - Async chat completion
+- `client.models.list()` - List available models
+- `client.models.alist()` - Async list models
+
+### Parameters
+
+- `model`: Model to use (required)
+- `messages`: List of messages (required)
+- `temperature`: Sampling temperature (0.0 to 2.0)
+- `max_tokens`: Maximum tokens to generate
+- `stream`: Enable streaming responses
+- `top_p`: Nucleus sampling parameter
+- `frequency_penalty`: Frequency penalty
+- `presence_penalty`: Presence penalty
+
+## Security & SSL
+
+The Lexa SDK automatically handles SSL certificate verification:
+
+- **Default**: Uses enhanced SSL with automatic certificate management
+- **Fallback**: Gracefully falls back to standard SSL verification
+- **Manual Override**: Allows custom SSL configuration when needed
+
+## Migration from OpenAI
+
+If you're currently using OpenAI's SDK, migrating to Lexa is straightforward:
+
+<Tabs>
+<Tab title="Before (OpenAI)">
+```python
+import openai
+
+client = openai.OpenAI(api_key="your-key")
+
+response = client.chat.completions.create(
+    messages=[{"role": "user", "content": "Hello!"}],
+    model="gpt-3.5-turbo"
+)
+```
+</Tab>
+
+<Tab title="After (Lexa)">
+```python
+from lexa_sdk import Lexa
+
+client = Lexa(api_key="your-key")
+
+response = client.chat.completions.create(
+    messages=[{"role": "user", "content": "Hello!"}],
+    model="lexa-mml"
+)
+```
+</Tab>
+</Tabs>
+
+## Installation Options
+
+<Tabs>
+<Tab title="pip">
+```bash
+pip install lexa
+```
+</Tab>
+
+<Tab title="pip with version">
+```bash
+pip install lexa==1.0.3
+```
+</Tab>
+
+<Tab title="From source">
+```bash
+pip install git+https://github.com/Robi-Labs/lexa-python-sdk.git
+```
+</Tab>
+</Tabs>
+
+## Requirements
+
+- **Python**: 3.8 or higher
+- **Dependencies**: Automatically managed by pip
+- **SSL**: Automatic certificate handling (no manual setup required)
+
+## Get Your API Key
+
+<Steps>
+<Step title="Visit Lexa Chat">
+  Go to [https://www.lexa.chat](https://www.lexa.chat)
+</Step>
+
+<Step title="Sign up or log in">
+  Create an account or sign in to your existing account
+</Step>
+
+<Step title="Navigate to Account settings">
+  Click your avatar → Settings → Account tab
+</Step>
+
+<Step title="Generate API key">
+  Find "API Keys" and click "Show" to view your key
+</Step>
+
+<Step title="Use in your application">
+  Copy the key and use it in your Lexa SDK initialization
+</Step>
+</Steps>
+
+## Links
+
+<CardGroup cols={2}>
+<Card title="PyPI Package" icon="download" href="https://pypi.org/project/lexa/">
+  View on PyPI registry
+</Card>
+
+<Card title="GitHub Repository" icon="github" href="https://github.com/Robi-Labs/lexa-python-sdk">
+  Source code and issues
+</Card>
+
+<Card title="Lexa Chat" icon="message" href="https://lexa.chat">
+  Try Lexa online
+</Card>
+
+<Card title="Community" icon="users" href="https://community.robiai.com/">
+  Join our community
+</Card>
+</CardGroup>
+
+## Support
+
+- **Issues**: [GitHub Issues](https://github.com/Robi-Labs/lexa-python-sdk/issues)
+- **Email**: lexa@robiai.com
+- **Community**: [Robi AI Community](https://community.robiai.com/)
+
+Reference: [lexa on PyPI](https://pypi.org/project/lexa/)
