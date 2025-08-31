@@ -1,0 +1,278 @@
+---
+title: "JavaScript SDK"
+description: "Use the official Lexa JavaScript SDK for easy integration with your applications"
+---
+
+## JavaScript SDK
+
+Use the official Lexa JavaScript SDK to integrate Lexa AI into your applications with a familiar OpenAI-style API.
+
+<Card
+  title="Install from NPM"
+  icon="download"
+  href="https://www.npmjs.com/package/@robilabs/lexa"
+  horizontal
+>
+  Get the latest version: `npm install @robilabs/lexa@latest`
+</Card>
+
+## Quick Start
+
+### Installation
+
+```bash
+npm install @robilabs/lexa@latest
+```
+
+### Basic Usage
+
+```javascript
+import Lexa from '@robilabs/lexa';
+
+const lexa = new Lexa('your-api-key');
+
+const completion = await lexa.chat({
+  messages: [
+    { role: 'user', content: 'Hello! How are you?' }
+  ],
+  model: 'lexa-mml',
+  temperature: 0.7,
+  max_tokens: 100
+});
+
+console.log(completion.choices[0].message.content);
+```
+
+## Features
+
+- **OpenAI-style API** - Familiar interface, easy migration
+- **Real Lexa Models** - Access to lexa-mml, lexa-x1, lexa-rho
+- **TypeScript Support** - Full type definitions included
+- **Streaming Support** - Real-time text generation
+- **Multimodal Capabilities** - Vision and text processing
+- **Simple Setup** - Just install and start using
+
+## Available Models
+
+The SDK provides access to the following Lexa models:
+
+<CardGroup cols={3}>
+<Card title="lexa-mml" icon="image">
+  Multimodal model with vision capabilities (8192 context window)
+</Card>
+
+<Card title="lexa-x1" icon="bolt">
+  Fast, lightweight text-based model (4096 context window)
+</Card>
+
+<Card title="lexa-rho" icon="brain">
+  Reasoning model with enhanced capabilities (16384 context window)
+</Card>
+</CardGroup>
+
+## Usage Examples
+
+### Basic Chat Completion
+
+```javascript
+import Lexa from '@robilabs/lexa';
+
+const lexa = new Lexa('your-api-key');
+
+const completion = await lexa.chat({
+  messages: [
+    { role: 'user', content: 'Hello! Can you tell me a joke?' }
+  ],
+  model: 'lexa-mml',
+  temperature: 0.7,
+  max_tokens: 100
+});
+
+console.log(completion.choices[0].message.content);
+```
+
+### Conversation with System Message
+
+```javascript
+const completion = await lexa.chat({
+  messages: [
+    { 
+      role: 'system', 
+      content: 'You are a helpful assistant that speaks like a pirate.' 
+    },
+    { 
+      role: 'user', 
+      content: 'What is the weather like today?' 
+    }
+  ],
+  model: 'lexa-x1',
+  temperature: 0.9
+});
+```
+
+### Streaming Response
+
+```javascript
+const completion = await lexa.chat({
+  messages: [
+    { role: 'user', content: 'Write a short story.' }
+  ],
+  model: 'lexa-rho',
+  stream: true
+});
+
+// Handle streaming response
+for await (const chunk of completion.stream) {
+  console.log(chunk);
+}
+```
+
+### List Available Models
+
+```javascript
+const models = await lexa.models();
+console.log(models.data);
+// Output: [
+//   { id: 'lexa-mml', object: 'model', owned_by: 'lexa' },
+//   { id: 'lexa-x1', object: 'model', owned_by: 'lexa' },
+//   { id: 'lexa-rho', object: 'model', owned_by: 'lexa' }
+// ]
+```
+
+## API Reference
+
+### Constructor
+
+```javascript
+const lexa = new Lexa(apiKey, config);
+```
+
+**Parameters:**
+- `apiKey` (string): Your Lexa API key
+- `config` (object, optional): Configuration options
+  - `baseURL` (string): Custom base URL (default: 'https://www.lexa.chat/api')
+
+### Chat Completion
+
+```javascript
+const completion = await lexa.chat(options);
+```
+
+**Options:**
+- `messages` (array): Array of message objects
+- `model` (string): Model to use (default: 'lexa-mml')
+- `temperature` (number, optional): Controls randomness (0-2)
+- `max_tokens` (number, optional): Maximum tokens to generate
+- `stream` (boolean, optional): Enable streaming response
+
+### List Models
+
+```javascript
+const models = await lexa.models();
+```
+
+Returns available models with their metadata.
+
+## Migration from OpenAI
+
+If you're currently using OpenAI's SDK, migrating to Lexa is straightforward:
+
+<Tabs>
+<Tab title="Before (OpenAI)">
+```javascript
+import OpenAI from 'openai';
+const openai = new OpenAI({ apiKey: 'your-key' });
+
+const completion = await openai.chat.completions.create({
+  messages: [{ role: 'user', content: 'Hello!' }],
+  model: 'gpt-3.5-turbo'
+});
+```
+</Tab>
+
+<Tab title="After (Lexa)">
+```javascript
+import Lexa from '@robilabs/lexa';
+const lexa = new Lexa('your-key');
+
+const completion = await lexa.chat({
+  messages: [{ role: 'user', content: 'Hello!' }],
+  model: 'lexa-mml'
+});
+```
+</Tab>
+</Tabs>
+
+## Installation Options
+
+<Tabs>
+<Tab title="npm">
+```bash
+npm install @robilabs/lexa@latest
+```
+</Tab>
+
+<Tab title="yarn">
+```bash
+yarn add @robilabs/lexa
+```
+</Tab>
+
+<Tab title="pnpm">
+```bash
+pnpm add @robilabs/lexa
+```
+</Tab>
+</Tabs>
+
+## Get Your API Key
+
+<Steps>
+<Step title="Visit Lexa Chat">
+  Go to [https://www.lexa.chat](https://www.lexa.chat)
+</Step>
+
+<Step title="Sign up or log in">
+  Create an account or sign in to your existing account
+</Step>
+
+<Step title="Navigate to Account settings">
+  Click your avatar → Settings → Account tab
+</Step>
+
+<Step title="Generate API key">
+  Find "API Keys" and click "Show" to view your key
+</Step>
+
+<Step title="Use in your application">
+  Copy the key and use it in your Lexa SDK initialization
+</Step>
+</Steps>
+
+## Links
+
+<CardGroup cols={2}>
+<Card title="NPM Package" icon="download" href="https://www.npmjs.com/package/@robilabs/lexa">
+  View on npm registry
+</Card>
+
+<Card title="GitHub Repository" icon="github" href="https://github.com/Robi-Labs/lexa-js-sdk">
+  Source code and issues
+</Card>
+
+<Card title="Lexa Chat" icon="message" href="https://lexa.chat">
+  Try Lexa online
+</Card>
+
+<Card title="Community" icon="users" href="https://community.robiai.com/">
+  Join our community
+</Card>
+</CardGroup>
+
+## Support
+
+- **Issues**: [GitHub Issues](https://github.com/Robi-Labs/lexa-js-sdk/issues)
+- **Email**: lexa@robiai.com
+- **Community**: [Robi AI Community](https://community.robiai.com/)
+
+Reference: [@robilabs/lexa on npm](https://www.npmjs.com/package/@robilabs/lexa?activeTab=readme)

@@ -69,7 +69,8 @@
           {
             "group": "Integrations",
             "pages": [
-              "vscode-integration"
+              "vscode-integration",
+              "js-sdk"
             ]
           }
         ]
